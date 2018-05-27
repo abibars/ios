@@ -139,11 +139,6 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
 
         // Looking up the matched item; crash if nothing matched.
         
-        // Check account
-        if providerData.setupActiveAccount() == false {
-            assert(false, "not account available return nil!")
-        }
-        
         if identifier == .rootContainer {
             
             if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.account, providerData.homeServerUrl)) {
