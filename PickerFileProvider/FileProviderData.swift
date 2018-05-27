@@ -27,12 +27,118 @@ import FileProvider
 
 class FileProviderData: NSObject {
     
-    static let defaultFileItemCapabilities: NSFileProviderItemCapabilities =
-        [.allowsReading, .allowsWriting, .allowsRenaming, .allowsDeleting, .allowsTrashing, .allowsReparenting]
-    
     var fileProviderItems = [FileProviderItem]() // Contains all the items – the working set in this sample.
     
     var currentAnchor: UInt64 = 0
+    
+    var ocNetworking: OCnetworking?
+    var account = ""
+    var accountUser = ""
+    var accountUserID = ""
+    var accountPassword = ""
+    var accountUrl = ""
+    var homeServerUrl = ""
+    var directoryUser = ""
+    
+    func setupActiveAccount() -> Bool {
+        
+        groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
+        fileProviderStorageURL = groupURL!.appendingPathComponent(k_assetLocalIdentifierFileProviderStorage)
+        
+        // Create dir File Provider Storage
+        do {
+            try FileManager.default.createDirectory(atPath: fileProviderStorageURL!.path, withIntermediateDirectories: true, attributes: nil)
+        } catch let error as NSError {
+            NSLog("Unable to create directory \(error.debugDescription)")
+        }
+        
+        guard let activeAccount = NCManageDatabase.sharedInstance.getAccountActive() else {
+            return false
+        }
+        
+        account = activeAccount.account
+        accountUser = activeAccount.user
+        accountUserID = activeAccount.userID
+        accountPassword = activeAccount.password
+        accountUrl = activeAccount.url
+        homeServerUrl = CCUtility.getHomeServerUrlActiveUrl(activeAccount.url)
+        directoryUser = CCUtility.getDirectoryActiveUser(activeAccount.user, activeUrl: activeAccount.url)
+        
+        ocNetworking = OCnetworking.init(delegate: nil, metadataNet: nil, withUser: accountUser, withUserID: accountUserID, withPassword: accountPassword, withUrl: accountUrl)
+        
+        return true
+    }
+    
+    func getTableMetadataFromItemIdentifier(_ itemIdentifier: NSFileProviderItemIdentifier) -> tableMetadata? {
+        
+        let fileID = itemIdentifier.rawValue
+        return NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, fileID))
+    }
+
+    func getItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier {
+        
+        return NSFileProviderItemIdentifier(metadata.fileID)
+    }
+    
+    func createFileIdentifierOnFileSystem(metadata: tableMetadata) {
+        
+        let itemIdentifier = getItemIdentifier(metadata: metadata)
+        let identifierPath = fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue
+        let fileIdentifier = identifierPath + "/" + metadata.fileName
+        
+        do {
+            try FileManager.default.createDirectory(atPath: identifierPath, withIntermediateDirectories: true, attributes: nil)
+        } catch { }
+        
+        // If do not exists create file with size = 0
+        if FileManager.default.fileExists(atPath: fileIdentifier) == false {
+            FileManager.default.createFile(atPath: fileIdentifier, contents: nil, attributes: nil)
+        }
+    }
+    
+    func getParentItemIdentifier(metadata: tableMetadata) -> NSFileProviderItemIdentifier? {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return NSFileProviderItemIdentifier("") }
+        
+        if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata.directoryID))  {
+            if directory.serverUrl == homeServerUrl {
+                return NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue)
+            } else {
+                // get the metadata.FileID of parent Directory
+                if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, directory.fileID))  {
+                    let identifier = getItemIdentifier(metadata: metadata)
+                    return identifier
+                }
+            }
+        }
+        
+        return nil
+    }
+    
+    func getTableDirectoryFromParentItemIdentifier(_ parentItemIdentifier: NSFileProviderItemIdentifier) -> tableDirectory? {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return nil }
+        
+        var predicate: NSPredicate
+        
+        if parentItemIdentifier == .rootContainer {
+            predicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
+        } else {
+            
+            guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else {
+                return nil
+            }
+            predicate = NSPredicate(format: "account = %@ AND fileID = %@", account, metadata.fileID)
+        }
+        
+        guard let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: predicate) else {
+            return nil
+        }
+        
+        return directory
+    }
     
     // Convinient methods for item lookup
     func item(for identifier: NSFileProviderItemIdentifier) -> FileProviderItem? {

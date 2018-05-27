@@ -41,18 +41,18 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
         
         var items: [NSFileProviderItemProtocol] = []
         
-        guard let metadata = getTableMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
+        guard let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier) else {
             observer.finishEnumerating(upTo: nil)
             return
         }
         
         if metadata.directory == false {
-            createFileIdentifierOnFileSystem(metadata: metadata)
+            providerData.createFileIdentifierOnFileSystem(metadata: metadata)
         }
         
-        let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
+        let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
         if parentItemIdentifier != nil {
-            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             items.append(item)
         }
         

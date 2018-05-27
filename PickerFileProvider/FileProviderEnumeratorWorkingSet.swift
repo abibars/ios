@@ -42,18 +42,18 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         var items: [NSFileProviderItemProtocol] = []
         
         // Tag
-        let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", account))
+        let tags = NCManageDatabase.sharedInstance.getTags(predicate: NSPredicate(format: "account = %@", providerData.account))
         for tag in tags {
             
-            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", account, tag.fileID))  {
+            if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, tag.fileID))  {
                 
                 if metadata.directory == false {
-                    createFileIdentifierOnFileSystem(metadata: metadata)
+                    providerData.createFileIdentifierOnFileSystem(metadata: metadata)
                 }
 
-                let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
+                let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     items.append(item)
                 }
             }

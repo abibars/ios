@@ -39,12 +39,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if #available(iOSApplicationExtension 11.0, *) {
 
             if (enumeratedItemIdentifier == .rootContainer) {
-                serverUrl = homeServerUrl
+                serverUrl = providerData.homeServerUrl
             } else {
                 
-                let metadata = getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
+                let metadata = providerData.getTableMetadataFromItemIdentifier(enumeratedItemIdentifier)
                 if metadata != nil  {
-                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, metadata!.directoryID))  {
+                    if let directorySource = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, metadata!.directoryID))  {
                         serverUrl = directorySource.serverUrl + "/" + metadata!.fileName
                     }
                 }
@@ -64,7 +64,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         var metadatas: [tableMetadata]?
 
         // Check account
-        if setupActiveAccount() == false {
+        if providerData.setupActiveAccount() == false {
             observer.finishEnumerating(upTo: nil)
             return
         }
@@ -77,8 +77,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // Select items from database
-            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", account, serverUrl))  {
-                metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", account, directory.directoryID), sorted: "fileName", ascending: true)
+            if let directory = NCManageDatabase.sharedInstance.getTableDirectory(predicate: NSPredicate(format: "account = %@ AND serverUrl = %@", providerData.account, serverUrl))  {
+                metadatas = NCManageDatabase.sharedInstance.getMetadatas(predicate: NSPredicate(format: "account = %@ AND directoryID = %@", providerData.account, directory.directoryID), sorted: "fileName", ascending: true)
             }
             
             // Calculate current page
@@ -87,7 +87,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 var numPage = Int(String(data: page.rawValue, encoding: .utf8)!)!
                 
                 if (metadatas != nil) {
-                    items = self.selectItems(numPage: numPage, account: account, serverUrl: serverUrl, metadatas: metadatas!)
+                    items = self.selectItems(numPage: numPage, account: providerData.account, serverUrl: serverUrl, metadatas: metadatas!)
                     observer.didEnumerate(items)
                 }
                 if (items.count == self.recordForPage) {
@@ -101,12 +101,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             }
             
             // Read Folder
-            ocNetworking?.readFolder(serverUrl, depth: "1", account: account, success: { (metadatas, metadataFolder, directoryID) in
+            providerData.ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
                 
                 if (metadatas != nil) {
-                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", account, directoryID!), clearDateReadDirectoryID: directoryID!)
+                    NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
                     if let metadataDB = NCManageDatabase.sharedInstance.addMetadatas(metadatas as! [tableMetadata], serverUrl: serverUrl) {
-                        items = self.selectItems(numPage: 0, account: account, serverUrl: serverUrl, metadatas: metadataDB)
+                        items = self.selectItems(numPage: 0, account: self.providerData.account, serverUrl: serverUrl, metadatas: metadataDB)
                         if (items.count > 0) {
                             observer.didEnumerate(items)
                         }
@@ -124,7 +124,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
                 
                 // select item from database
                 if (metadatas != nil) {
-                    items = self.selectItems(numPage: 0, account: account, serverUrl: serverUrl, metadatas: metadatas!)
+                    items = self.selectItems(numPage: 0, account: self.providerData.account, serverUrl: serverUrl, metadatas: metadatas!)
                     observer.didEnumerate(items)
                 }
                 if (items.count == self.recordForPage) {
@@ -173,12 +173,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             if (counter >= start && counter <= stop) {
                 
                 if metadata.directory == false {
-                    createFileIdentifierOnFileSystem(metadata: metadata)
+                    providerData.createFileIdentifierOnFileSystem(metadata: metadata)
                 }
 
-                let parentItemIdentifier = getParentItemIdentifier(metadata: metadata)
+                let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
-                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!)
+                    let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     items.append(item)
                 }
             }

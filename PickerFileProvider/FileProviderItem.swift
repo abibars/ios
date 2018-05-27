@@ -81,10 +81,10 @@ class FileProviderItem: NSObject, NSFileProviderItem {
     var isDirectory = false
     var unenumChanges: UnenumChanges = []
 
-    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier) {
+    init(metadata: tableMetadata, parentItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
         
         self.parentItemIdentifier = parentItemIdentifier
-        self.itemIdentifier = getItemIdentifier(metadata: metadata)
+        self.itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
         
         self.contentModificationDate = metadata.date as Date
         self.creationDate = metadata.date as Date
