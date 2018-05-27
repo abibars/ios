@@ -298,6 +298,7 @@
 		F7659A2E1DC0B72F004860C4 /* EARestrictedScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A2C1DC0B72F004860C4 /* EARestrictedScrollView.m */; };
 		F7659A371DC0B737004860C4 /* iRate.bundle in Resources */ = {isa = PBXBuildFile; fileRef = F7659A311DC0B737004860C4 /* iRate.bundle */; };
 		F7659A391DC0B737004860C4 /* iRate.m in Sources */ = {isa = PBXBuildFile; fileRef = F7659A331DC0B737004860C4 /* iRate.m */; };
+		F7694F8220BAE2B5007DB44C /* FileProviderData.swift in Sources */ = {isa = PBXBuildFile; fileRef = F7694F8120BAE2B5007DB44C /* FileProviderData.swift */; };
 		F76B3CCE1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CCF1EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
 		F76B3CD01EAE01BD00921AC9 /* NCBrand.swift in Sources */ = {isa = PBXBuildFile; fileRef = F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */; };
@@ -1153,6 +1154,7 @@
 		F768EAFB1BFB7CD800B6E341 /* CCShareOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareOC.h; sourceTree = "<group>"; };
 		F768EAFC1BFB7CD800B6E341 /* CCShareOC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCShareOC.m; sourceTree = "<group>"; };
 		F768EB021BFB7EA900B6E341 /* CCShare.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = CCShare.storyboard; sourceTree = "<group>"; };
+		F7694F8120BAE2B5007DB44C /* FileProviderData.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileProviderData.swift; sourceTree = "<group>"; };
 		F76B3CCD1EAE01BD00921AC9 /* NCBrand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NCBrand.swift; sourceTree = "<group>"; };
 		F76C3B831C6388BC00DC4301 /* CCGraphics.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCGraphics.h; sourceTree = "<group>"; };
 		F76C3B841C6388BC00DC4301 /* CCGraphics.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CCGraphics.m; sourceTree = "<group>"; };
@@ -2168,6 +2170,7 @@
 				F75EAC4E20974B5E0071FF95 /* FileProviderEnumeratorFile.swift */,
 				F7496B7C208F548E004B299C /* FileProviderItem.swift */,
 				F74344241E1264EE001CC831 /* FileProvider.swift */,
+				F7694F8120BAE2B5007DB44C /* FileProviderData.swift */,
 			);
 			path = PickerFileProvider;
 			sourceTree = "<group>";
@@ -3807,6 +3810,7 @@
 				F7BB50E91F2238F500C47094 /* AFViewShaker.m in Sources */,
 				F7BB50C31F22379400C47094 /* CCUtility.m in Sources */,
 				F7BB50DC1F2238AC00C47094 /* OCXMLSharedParser.m in Sources */,
+				F7694F8220BAE2B5007DB44C /* FileProviderData.swift in Sources */,
 				F7BB50F61F2239BC00C47094 /* BKPasscodeInputView.m in Sources */,
 				F7BB50F41F2239B600C47094 /* BKPasscodeDummyViewController.m in Sources */,
 				F7BB50C41F22379800C47094 /* NSString+TruncateToWidth.m in Sources */,

@@ -40,6 +40,8 @@ var fileProviderStorageURL: URL?
 
 // List
 var listUpdateItems = [NSFileProviderItem]()
+var listDeleteItems = [NSFileProviderItem]()
+
 var listFavoriteIdentifierRank = [String:NSNumber]()
 var fileNamePathImport = [String]()
 
@@ -84,6 +86,8 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
     var fileManager = FileManager()
 
+    var fileProviderData = FileProviderData()
+    
     override init() {
         
         super.init()
@@ -1094,6 +1098,23 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     // --------------------------------------------------------------------------------------------
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
+    
+    // Convinent method to signal the enumeration for containers.
+    //
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+    
+        for containerItemIdentifier in containerItemIdentifiers {
+            
+            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
+                if let error = error {
+                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
+                }
+            }
+        }
+    }
     
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         
