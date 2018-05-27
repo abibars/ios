@@ -28,10 +28,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
     let recordForPage = 20
     var serverUrl: String?
+    var providerData: FileProviderData
     
-    init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
+    init(enumeratedItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
         
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
+        self.providerData = providerData
         
         // Select ServerUrl
         if #available(iOSApplicationExtension 11.0, *) {

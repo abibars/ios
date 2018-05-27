@@ -34,13 +34,10 @@ class FileProviderData: NSObject {
     
     var currentArchor: UInt64 = 0
     
-   
     // Convinient methods for item lookup
     func item(for identifier: NSFileProviderItemIdentifier) -> FileProviderItem? {
         
         let items = fileProviderItems.filter({ $0.itemIdentifier == identifier })
         return items.first
     }
-    
-    
 }

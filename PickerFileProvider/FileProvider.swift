@@ -85,8 +85,7 @@ var timerUpload: Timer?
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
     var fileManager = FileManager()
-
-    var fileProviderData = FileProviderData()
+    var providerData = FileProviderData()
     
     override init() {
         
@@ -136,7 +135,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         var maybeEnumerator: NSFileProviderEnumerator? = nil
 
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
-            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
             maybeEnumerator = FileProviderEnumeratorWorkingSet(enumeratedItemIdentifier: containerItemIdentifier)
         } else {
@@ -146,7 +145,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             let item = try self.item(for: containerItemIdentifier)
             
             if item.typeIdentifier == kUTTypeFolder as String {
-                maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+                maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
             } else {
                 maybeEnumerator = FileProviderEnumeratorFile(enumeratedItemIdentifier: containerItemIdentifier)
             }
