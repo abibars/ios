@@ -45,9 +45,6 @@ var listDeleteItems = [NSFileProviderItem]()
 var listFavoriteIdentifierRank = [String:NSNumber]()
 var fileNamePathImport = [String]()
 
-// Anchor for enumerator
-var currentAnchor: UInt64 = 0
-
 // Metadata Temp for Import
 let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
@@ -137,7 +134,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
-            maybeEnumerator = FileProviderEnumeratorWorkingSet(enumeratedItemIdentifier: containerItemIdentifier)
+            maybeEnumerator = FileProviderEnumeratorWorkingSet(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else {
             // determine if the item is a directory or a file
             // - for a directory, instantiate an enumerator of its subitems
@@ -147,7 +144,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             if item.typeIdentifier == kUTTypeFolder as String {
                 maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
             } else {
-                maybeEnumerator = FileProviderEnumeratorFile(enumeratedItemIdentifier: containerItemIdentifier)
+                maybeEnumerator = FileProviderEnumeratorFile(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
             }
         }
         

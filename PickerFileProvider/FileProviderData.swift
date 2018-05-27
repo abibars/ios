@@ -32,7 +32,7 @@ class FileProviderData: NSObject {
     
     var fileProviderItems = [FileProviderItem]() // Contains all the items – the working set in this sample.
     
-    var currentArchor: UInt64 = 0
+    var currentAnchor: UInt64 = 0
     
     // Convinient methods for item lookup
     func item(for identifier: NSFileProviderItemIdentifier) -> FileProviderItem? {

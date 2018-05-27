@@ -147,7 +147,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        let data = "\(currentAnchor)".data(using: .utf8)
+        let data = "\(providerData.currentAnchor)".data(using: .utf8)
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
     

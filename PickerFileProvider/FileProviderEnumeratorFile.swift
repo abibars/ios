@@ -26,9 +26,11 @@ import FileProvider
 class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
     
     var enumeratedItemIdentifier: NSFileProviderItemIdentifier
-    
-    init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
+    var providerData: FileProviderData
+
+    init(enumeratedItemIdentifier: NSFileProviderItemIdentifier, providerData: FileProviderData) {
         self.enumeratedItemIdentifier = enumeratedItemIdentifier
+        self.providerData = providerData
         super.init()
     }
     
@@ -64,7 +66,7 @@ class FileProviderEnumeratorFile: NSObject, NSFileProviderEnumerator {
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        let data = "\(currentAnchor)".data(using: .utf8)
+        let data = "\(providerData.currentAnchor)".data(using: .utf8)
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
 }
