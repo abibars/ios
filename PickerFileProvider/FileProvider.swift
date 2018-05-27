@@ -109,7 +109,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         if (containerItemIdentifier == NSFileProviderItemIdentifier.rootContainer) {
             maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
-            maybeEnumerator = FileProviderEnumeratorWorkingSet(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
+            maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
         } else {
             // determine if the item is a directory or a file
             // - for a directory, instantiate an enumerator of its subitems
