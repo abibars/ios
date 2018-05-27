@@ -27,7 +27,7 @@ import FileProvider
 
 class FileProviderData: NSObject {
     
-    var fileProviderItems = [FileProviderItem]() // Contains all the items – the working set in this sample.
+    var fileProviderSignalItems = [FileProviderItem]() // Contains the items
     
     var currentAnchor: UInt64 = 0
     
@@ -49,8 +49,6 @@ class FileProviderData: NSObject {
     
     var fileNamePathImport = [String]()
 
-    
-    
     
     func setupActiveAccount() -> Bool {
         
@@ -155,7 +153,7 @@ class FileProviderData: NSObject {
     // Convinient methods for item lookup
     func item(for identifier: NSFileProviderItemIdentifier) -> FileProviderItem? {
         
-        let items = fileProviderItems.filter({ $0.itemIdentifier == identifier })
+        let items = fileProviderSignalItems.filter({ $0.itemIdentifier == identifier })
         return items.first
     }
 }
