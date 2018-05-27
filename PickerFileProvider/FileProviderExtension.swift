@@ -51,7 +51,7 @@ var timerUpload: Timer?
  
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
-class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
+class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
     var fileManager = FileManager()
     var providerData = FileProviderData()

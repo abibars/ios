@@ -208,7 +208,7 @@
 		F73D71641F2674A400E233EB /* NCText.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F73D71631F2674A400E233EB /* NCText.storyboard */; };
 		F73F537F1E929C8500F8678D /* CCMore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F73F537E1E929C8500F8678D /* CCMore.swift */; };
 		F74344171E1264EE001CC831 /* DocumentPickerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */; };
-		F74344251E1264EE001CC831 /* FileProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProvider.swift */; };
+		F74344251E1264EE001CC831 /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = F74344241E1264EE001CC831 /* FileProviderExtension.swift */; };
 		F74344561E12784A001CC831 /* libcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63061D5B3467004E2AA5 /* libcrypto.a */; };
 		F74344591E12786C001CC831 /* libssl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F70A63071D5B3467004E2AA5 /* libssl.a */; };
 		F74344631E127D79001CC831 /* CCBKPasscode.m in Sources */ = {isa = PBXBuildFile; fileRef = F7FE125D1BAC03FB0041924B /* CCBKPasscode.m */; };
@@ -918,7 +918,7 @@
 		F73D71631F2674A400E233EB /* NCText.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = NCText.storyboard; sourceTree = "<group>"; };
 		F73F537E1E929C8500F8678D /* CCMore.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CCMore.swift; sourceTree = "<group>"; };
 		F74344161E1264EE001CC831 /* DocumentPickerViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPickerViewController.swift; sourceTree = "<group>"; };
-		F74344241E1264EE001CC831 /* FileProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProvider.swift; sourceTree = "<group>"; };
+		F74344241E1264EE001CC831 /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
 		F74344901E128E8F001CC831 /* Picker.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = Picker.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F74344911E128E96001CC831 /* PickerFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = PickerFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F743B2C31C95BBE8006F5B4A /* CCShareInfoCMOC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CCShareInfoCMOC.h; sourceTree = "<group>"; };
@@ -2166,7 +2166,7 @@
 				F7496B7B208F548E004B299C /* FileProviderEnumerator.swift */,
 				F75EAC4E20974B5E0071FF95 /* FileProviderEnumeratorFile.swift */,
 				F7496B7C208F548E004B299C /* FileProviderItem.swift */,
-				F74344241E1264EE001CC831 /* FileProvider.swift */,
+				F74344241E1264EE001CC831 /* FileProviderExtension.swift */,
 				F7694F8120BAE2B5007DB44C /* FileProviderData.swift */,
 			);
 			path = PickerFileProvider;
@@ -3794,7 +3794,7 @@
 				F7BB50C01F22378B00C47094 /* CCError.m in Sources */,
 				F7BB50E01F2238CA00C47094 /* AFNetworkReachabilityManager.m in Sources */,
 				F7BB50F81F2239C400C47094 /* BKPasscodeViewController.m in Sources */,
-				F74344251E1264EE001CC831 /* FileProvider.swift in Sources */,
+				F74344251E1264EE001CC831 /* FileProviderExtension.swift in Sources */,
 				F7BB50BA1F22374A00C47094 /* CCNetworking.m in Sources */,
 				F7BB50DD1F2238B100C47094 /* NSString+Encode.m in Sources */,
 				F7BB50D51F22389600C47094 /* NSDate+RFC1123.m in Sources */,
