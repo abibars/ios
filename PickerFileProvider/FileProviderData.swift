@@ -40,6 +40,18 @@ class FileProviderData: NSObject {
     var homeServerUrl = ""
     var directoryUser = ""
     
+    // Directory
+    var groupURL: URL?
+    var fileProviderStorageURL: URL?
+    
+    var listUpdateItems = [NSFileProviderItem]()
+    var listFavoriteIdentifierRank = [String:NSNumber]()
+    
+    var fileNamePathImport = [String]()
+
+    
+    
+    
     func setupActiveAccount() -> Bool {
         
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)

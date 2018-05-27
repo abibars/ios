@@ -22,28 +22,9 @@
 //
 
 import FileProvider
-import UIKit
-import MobileCoreServices
-
-
-
-// Directory
-var groupURL: URL?
-var fileProviderStorageURL: URL?
-
-// List
-var listUpdateItems = [NSFileProviderItem]()
-var listDeleteItems = [NSFileProviderItem]()
-
-var listFavoriteIdentifierRank = [String:NSNumber]()
-var fileNamePathImport = [String]()
-
-// Metadata Temp for Import
-let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
 
 // Timer for Upload (queue)
 var timerUpload: Timer?
-
 
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
                                                             STRUCT item
@@ -70,12 +51,13 @@ var timerUpload: Timer?
  
    -------------------------------------------------------------------------------------------------------------------------------------------- */
 
-
-
 class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
     
     var fileManager = FileManager()
     var providerData = FileProviderData()
+    
+    // Metadata Temp for Import
+    let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
     
     override init() {
         
@@ -85,7 +67,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         
         if #available(iOSApplicationExtension 11.0, *) {
             
-            listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+            providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             
             // Timer for upload
             if timerUpload == nil {
@@ -663,7 +645,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                     print("error: \(error)")
                 }
                 do {
-                    try self.fileManager.removeItem(atPath: fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
+                    try self.fileManager.removeItem(atPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
                 } catch let error {
                     print("error: \(error)")
                 }
@@ -803,7 +785,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 
                 let itemIdentifier = self.providerData.getItemIdentifier(metadata: metadata)
                 
-                _ = self.moveFile(fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom, toPath: fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName)
+                _ = self.moveFile(self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + fileNameFrom, toPath: self.providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue + "/" + itemName)
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: metadata.fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: itemName, etag: nil, etagFPE: nil)
             }
@@ -946,7 +928,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             }
             
             let fileName = self.createFileName(fileURL.lastPathComponent, directoryID: tableDirectory.directoryID, serverUrl: serverUrl)
-            let fileNamePathDirectory = fileProviderStorageURL!.path + "/" + FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+            let fileNamePathDirectory = self.providerData.fileProviderStorageURL!.path + "/" + self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
             
             do {
                 try FileManager.default.createDirectory(atPath: fileNamePathDirectory, withIntermediateDirectories: true, attributes: nil)
@@ -980,7 +962,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             metadata.directory = false
             metadata.directoryID = tableDirectory.directoryID
             metadata.etag = ""
-            metadata.fileID = FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+            metadata.fileID = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
             metadata.size = size
             metadata.status = Double(k_metadataStatusHide)
             metadata.fileName = fileURL.lastPathComponent
@@ -992,7 +974,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
                 let metadataNet = CCMetadataNet()
                 
                 metadataNet.account = self.providerData.account
-                metadataNet.assetLocalIdentifier = FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
+                metadataNet.assetLocalIdentifier = self.FILEID_IMPORT_METADATA_TEMP + tableDirectory.directoryID + fileName
                 metadataNet.fileName = fileName
                 metadataNet.path = fileNamePathDirectory + "/" + fileName
                 metadataNet.selector = selectorUploadFile
@@ -1031,9 +1013,9 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileID = %@", providerData.account, fileID)) {
                 
                 // Rename directory file
-                if fileManager.fileExists(atPath: fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
+                if fileManager.fileExists(atPath: providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier) {
                     let itemIdentifier = providerData.getItemIdentifier(metadata: metadata)
-                    _ = moveFile(fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
+                    _ = moveFile(providerData.fileProviderStorageURL!.path + "/" + assetLocalIdentifier, toPath: providerData.fileProviderStorageURL!.path + "/" + itemIdentifier.rawValue)
                 }
                 
                 NCManageDatabase.sharedInstance.setLocalFile(fileID: fileID, date: nil, exifDate: nil, exifLatitude: nil, exifLongitude: nil, fileName: nil, etag: metadata.etag, etagFPE: metadata.etag)
@@ -1113,13 +1095,13 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
         let item = try? self.item(for: identifier)
         if item != nil {
             var found = false
-            for updateItem in listUpdateItems {
+            for updateItem in providerData.listUpdateItems {
                 if updateItem.itemIdentifier.rawValue == identifier.rawValue {
                     found = true
                 }
             }
             if !found {
-                listUpdateItems.append(item!)
+                providerData.listUpdateItems.append(item!)
             }
         }
         
@@ -1199,7 +1181,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             
             while exitLoop == false {
                 
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", providerData.account, resultFileName, directoryID)) != nil || fileNamePathImport.contains(serverUrl+"/"+resultFileName) {
+                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", providerData.account, resultFileName, directoryID)) != nil || providerData.fileNamePathImport.contains(serverUrl+"/"+resultFileName) {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension
@@ -1227,7 +1209,7 @@ class FileProvider: NSFileProviderExtension, CCNetworkingDelegate {
             }
         
             // add fileNamePathImport
-            fileNamePathImport.append(serverUrl+"/"+resultFileName)
+            providerData.fileNamePathImport.append(serverUrl+"/"+resultFileName)
         }
         
         return resultFileName

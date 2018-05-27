@@ -97,7 +97,7 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         // This is a file
         if (!metadata.directory) {
             
-            let fileIdentifier = fileProviderStorageURL!.path + "/" + self.itemIdentifier.rawValue + "/" + metadata.fileNameView
+            let fileIdentifier = providerData.fileProviderStorageURL!.path + "/" + self.itemIdentifier.rawValue + "/" + metadata.fileNameView
             var fileSize = 0 as Double
          
             do {
@@ -138,9 +138,9 @@ class FileProviderItem: NSObject, NSFileProviderItem {
         
         // Removed (if exists) this Item from listUpdate
         var counter = 0
-        for updateItem in listUpdateItems {
+        for updateItem in providerData.listUpdateItems {
             if updateItem.itemIdentifier.rawValue == itemIdentifier.rawValue {
-                listUpdateItems.remove(at: counter)
+                providerData.listUpdateItems.remove(at: counter)
                 break;
             }
             counter += 1

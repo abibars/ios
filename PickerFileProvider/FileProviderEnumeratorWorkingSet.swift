@@ -86,7 +86,7 @@ class FileProviderEnumeratorWorkingSet: NSObject, NSFileProviderEnumerator {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
-        observer.didUpdate(listUpdateItems)
+        observer.didUpdate(providerData.listUpdateItems)
         observer.finishEnumeratingChanges(upTo: anchor, moreComing: false)
     }
     
