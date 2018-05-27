@@ -134,7 +134,9 @@ class FileProviderData: NSObject {
         var predicate: NSPredicate
         
         if parentItemIdentifier == .rootContainer {
+            
             predicate = NSPredicate(format: "account = %@ AND serverUrl = %@", account, homeServerUrl)
+            
         } else {
             
             guard let metadata = getTableMetadataFromItemIdentifier(parentItemIdentifier) else {
