@@ -130,6 +130,25 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         return enumerator
     }
     
+    // Convinent method to signal the enumeration for containers.
+    //
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier], item: FileProviderItem) {
+        
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        providerData.fileProviderSignalItems.append(item)
+        
+        for containerItemIdentifier in containerItemIdentifiers {
+            
+            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
+                if let error = error {
+                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
+                }
+            }
+        }
+    }
+    
     // MARK: - Item
 
     override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
@@ -1064,25 +1083,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     // --------------------------------------------------------------------------------------------
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
-    
-    // Convinent method to signal the enumeration for containers.
-    //
-    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier], item: FileProviderItem) {
-        
-        /* ONLY iOS 11*/
-        guard #available(iOS 11, *) else { return }
-    
-        providerData.fileProviderSignalItems.append(item)
-        
-        for containerItemIdentifier in containerItemIdentifiers {
-            
-            NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
-                if let error = error {
-                    print("SignalEnumerator for \(containerItemIdentifier) returned error: \(error)")
-                }
-            }
-        }
-    }
     
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         
