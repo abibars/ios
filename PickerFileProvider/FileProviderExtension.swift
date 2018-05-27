@@ -1067,11 +1067,13 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
     // Convinent method to signal the enumeration for containers.
     //
-    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier], item: FileProviderItem) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
     
+        providerData.fileProviderSignalItems.append(item)
+        
         for containerItemIdentifier in containerItemIdentifiers {
             
             NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
