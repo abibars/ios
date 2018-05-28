@@ -1037,7 +1037,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
         
-        //NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier), clearDateReadDirectoryID: nil)
+        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier), clearDateReadDirectoryID: nil)
 
         if errorCode == 0 {
                 
