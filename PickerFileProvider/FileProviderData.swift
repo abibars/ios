@@ -25,11 +25,6 @@ import FileProvider
 
 class FileProviderData: NSObject {
     
-    var fileProviderSignalItems = [FileProviderItem]()
-    
-    var currentAnchor: UInt64 = 0
-    
-    var ocNetworking: OCnetworking?
     var account = ""
     var accountUser = ""
     var accountUserID = ""
@@ -42,8 +37,7 @@ class FileProviderData: NSObject {
     var groupURL: URL?
     var fileProviderStorageURL: URL?
     
-    var listFavoriteIdentifierRank = [String:NSNumber]()
-    var fileNamePathImport = [String]()
+    //var listFavoriteIdentifierRank = [String:NSNumber]()
 
     func setupActiveAccount() -> Bool {
         

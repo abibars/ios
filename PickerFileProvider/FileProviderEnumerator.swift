@@ -108,7 +108,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }
             
         // Read Folder
-        providerData.ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
+        ocNetworking?.readFolder(serverUrl, depth: "1", account: providerData.account, success: { (metadatas, metadataFolder, directoryID) in
                 
             if (metadatas != nil) {
                 NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "account = %@ AND directoryID = %@ AND session = ''", self.providerData.account, directoryID!), clearDateReadDirectoryID: directoryID!)
@@ -146,30 +146,23 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
         
         guard #available(iOS 11, *) else { return }
-        
-        let updated: UnenumChanges, deleted: UnenumChanges
-        updated = enumeratedItemIdentifier == .workingSet ? .workingSetUpdate : .containerUpdate
-        deleted = enumeratedItemIdentifier == .workingSet ? .workingSetDelete : .containerDelete
-        
-        // Report the trashed items since last signal, then remove the enumerated change
+    
+        // Report the trashed items since last signal
         //
-        let trashedItems = providerData.fileProviderSignalItems.filter{$0.unenumChanges.contains(deleted)}
-        let trashedIdentifiers = trashedItems.map{$0.itemIdentifier}
-        observer.didDeleteItems(withIdentifiers: trashedIdentifiers)
-        trashedItems.forEach{ $0.unenumChanges.remove(deleted)}
+        observer.didDeleteItems(withIdentifiers: fileProviderSignalDeleteItemIdentifier)
+        fileProviderSignalDeleteItemIdentifier.removeAll()
         
-        // Report the updated items since last signal, then remove the enumerated change
+        // Report the updated items since last signal
         //
-        let updatedItems = providerData.fileProviderSignalItems.filter{$0.unenumChanges.contains(updated)}
-        observer.didUpdate(updatedItems)
-        updatedItems.forEach{ $0.unenumChanges.remove(updated)}
+        observer.didUpdate(fileProviderSignalUpdateItem)
+        //providerData.fileProviderSignalUpdateItems.removeAll()
         
-        let data = "\(providerData.currentAnchor)".data(using: .utf8)
+        let data = "\(currentAnchor)".data(using: .utf8)
         observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)        
     }
     
     func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-        let data = "\(providerData.currentAnchor)".data(using: .utf8)
+        let data = "\(currentAnchor)".data(using: .utf8)
         completionHandler(NSFileProviderSyncAnchor(data!))
     }
     

@@ -26,6 +26,17 @@ import FileProvider
 // Timer for Upload (queue)
 var timerUpload: Timer?
 
+//
+
+var fileProviderSignalDeleteItemIdentifier = [NSFileProviderItemIdentifier]()
+var fileProviderSignalUpdateItem = [FileProviderItem]()
+
+var currentAnchor: UInt64 = 0
+
+var ocNetworking: OCnetworking?
+
+var fileNamePathImport = [String]()
+
 /* -----------------------------------------------------------------------------------------------------------------------------------------------
                                                             STRUCT item
    -----------------------------------------------------------------------------------------------------------------------------------------------
@@ -55,7 +66,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
     var fileManager = FileManager()
     var providerData = FileProviderData()
-    
+
     // Metadata Temp for Import
     let FILEID_IMPORT_METADATA_TEMP = k_uploadSessionID + "FILE_PROVIDER_EXTENSION"
     
@@ -69,7 +80,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         if #available(iOSApplicationExtension 11.0, *) {
             
-            providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
+            //providerData.listFavoriteIdentifierRank = NCManageDatabase.sharedInstance.getTableMetadatasDirectoryFavoriteIdentifierRank()
             
             // Timer for upload
             if timerUpload == nil {
@@ -134,12 +145,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
     // Convinent method to signal the enumeration for containers.
     //
-    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier], item: FileProviderItem) {
+    func signalEnumerator(for containerItemIdentifiers: [NSFileProviderItemIdentifier]) {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
-        
-        providerData.fileProviderSignalItems.append(item)
         
         for containerItemIdentifier in containerItemIdentifiers {
             
@@ -327,7 +336,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             _ = self.deleteFile("\(providerData.directoryUser)/\(metadata.fileID)")
             _ = self.deleteFile("\(providerData.directoryUser)/\(metadata.fileID).ico")
 
-            let task = providerData.ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght, etag, date) in
+            let task = ocNetworking?.downloadFileNameServerUrl("\(serverUrl)/\(metadata.fileName)", fileNameLocalPath: "\(providerData.directoryUser)/\(metadata.fileID)", communication: CCNetworking.shared().sharedOCCommunicationExtensionDownload(metadata.fileName), success: { (lenght, etag, date) in
                 
                 // copy download file to url
                 _ = self.copyFile("\(self.providerData.directoryUser)/\(metadata.fileID)", toPath: url.path)
@@ -514,7 +523,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                     let fileName = CCUtility.returnFileNamePath(fromFileName: metadata!.fileName, serverUrl: serverUrl, activeUrl: providerData.accountUrl)
                     let fileNameLocal = metadata!.fileID
 
-                    providerData.ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileName: fileName, fileNameLocal: fileNameLocal, success: {
+                    ocNetworking?.downloadThumbnail(withDimOfThumbnail: "m", fileName: fileName, fileNameLocal: fileNameLocal, success: {
 
                         do {
                             let url = URL.init(fileURLWithPath: self.providerData.directoryUser+"/"+metadata!.fileID+".ico")
@@ -578,7 +587,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         let serverUrl = tableDirectory.serverUrl
         
-        providerData.ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: providerData.account, success: { (fileID, date) in
+        ocNetworking?.createFolder(directoryName, serverUrl: serverUrl, account: providerData.account, success: { (fileID, date) in
     
             let metadata = tableMetadata()
                 
@@ -638,7 +647,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 return
             }
             
-            self.providerData.ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
+            ocNetworking?.deleteFileOrFolder(metadata.fileName, serverUrl: serverUrl, success: {
                 
                 let fileNamePath = self.providerData.directoryUser + "/" + metadata.fileID
                 do {
@@ -716,7 +725,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let directoryIDTo = NCManageDatabase.sharedInstance.getDirectoryID(serverUrlTo)!
         let fileNameTo = serverUrlTo + "/" + itemFrom.filename
     
-        providerData.ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
+        ocNetworking?.moveFileOrFolder(fileNameFrom, fileNameTo: fileNameTo, success: {
             
             if metadataFrom.directory {
                 
@@ -776,7 +785,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         let fileNamePathFrom = serverUrl + "/" + fileNameFrom
         let fileNamePathTo = serverUrl + "/" + itemName
         
-        providerData.ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {
+        ocNetworking?.moveFileOrFolder(fileNamePathFrom, fileNameTo: fileNamePathTo, success: {
             
             // Rename metadata
             guard let metadata = NCManageDatabase.sharedInstance.renameMetadata(fileNameTo: itemName, fileID: metadata.fileID) else {
@@ -889,9 +898,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
-            item.unenumChanges = [.containerUpdate, .workingSetUpdate]
-            providerData.currentAnchor += 1
-            signalEnumerator(for: [item.parentItemIdentifier, .workingSet], item: item)
+            fileProviderSignalUpdateItem.append(item)
+            currentAnchor += 1
+            signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             
             completionHandler(item, nil)
         
@@ -1021,9 +1030,9 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
-            item.unenumChanges = [.containerDelete, .workingSetUpdate]
-            providerData.currentAnchor += 1
-            signalEnumerator(for: [item.parentItemIdentifier, .workingSet], item: item)
+            fileProviderSignalDeleteItemIdentifier.append(item.itemIdentifier)
+            currentAnchor += 1
+            signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
         
         //NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier), clearDateReadDirectoryID: nil)
@@ -1045,7 +1054,10 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-                    //self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                    
+                    fileProviderSignalUpdateItem.append(item)
+                    currentAnchor += 1
+                    signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 } 
             }
             
@@ -1188,7 +1200,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             while exitLoop == false {
                 
-                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", providerData.account, resultFileName, directoryID)) != nil || providerData.fileNamePathImport.contains(serverUrl+"/"+resultFileName) {
+                if NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "account = %@ AND fileNameView = %@ AND directoryID = %@", providerData.account, resultFileName, directoryID)) != nil || fileNamePathImport.contains(serverUrl+"/"+resultFileName) {
                     
                     var name = NSString(string: resultFileName).deletingPathExtension
                     let ext = NSString(string: resultFileName).pathExtension
@@ -1216,7 +1228,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
         
             // add fileNamePathImport
-            providerData.fileNamePathImport.append(serverUrl+"/"+resultFileName)
+            fileNamePathImport.append(serverUrl+"/"+resultFileName)
         }
         
         return resultFileName
