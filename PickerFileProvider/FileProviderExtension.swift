@@ -119,7 +119,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             if item.typeIdentifier == kUTTypeFolder as String {
                 maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
             } else {
-                maybeEnumerator = FileProviderEnumeratorFile(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
+                maybeEnumerator = FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, providerData: providerData)
             }
         }
         
@@ -884,8 +884,15 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
         if parentItemIdentifier != nil {
+            
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
+            
+            item.unenumChanges = [.containerUpdate, .workingSetUpdate]
+            providerData.currentAnchor += 1
+            signalEnumerator(for: [item.parentItemIdentifier, .workingSet], item: item)
+            
             completionHandler(item, nil)
+        
         } else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
@@ -1028,7 +1035,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
-                    self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
+                    //self.refreshEnumerator(identifier: item.itemIdentifier, serverUrl: serverUrl)
                 } 
             }
             
@@ -1075,6 +1082,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     //  MARK: - User Function
     // --------------------------------------------------------------------------------------------
     
+    /*
     func refreshEnumerator(identifier: NSFileProviderItemIdentifier, serverUrl: String) {
         
         /* ONLY iOS 11*/
@@ -1108,6 +1116,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             }
         }
     }
+    */
     
     func copyFile(_ atPath: String, toPath: String) -> Error? {
         

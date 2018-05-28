@@ -44,9 +44,7 @@ class FileProviderData: NSObject {
     var groupURL: URL?
     var fileProviderStorageURL: URL?
     
-    var listUpdateItems = [NSFileProviderItem]()
     var listFavoriteIdentifierRank = [String:NSNumber]()
-    
     var fileNamePathImport = [String]()
 
     
