@@ -150,6 +150,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { return }
         
+        currentAnchor += 1
+
         for containerItemIdentifier in containerItemIdentifiers {
             
             NSFileProviderManager.default.signalEnumerator(for: containerItemIdentifier) { error in
@@ -899,7 +901,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
             fileProviderSignalUpdateItem.append(item)
-            currentAnchor += 1
             signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             
             completionHandler(item, nil)
@@ -1031,7 +1032,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
             fileProviderSignalDeleteItemIdentifier.append(item.itemIdentifier)
-            currentAnchor += 1
             signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
         
@@ -1056,7 +1056,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     
                     fileProviderSignalUpdateItem.append(item)
-                    currentAnchor += 1
                     signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 } 
             }
