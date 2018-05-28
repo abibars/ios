@@ -896,10 +896,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         } else {
             completionHandler(nil, NSFileProviderError(.noSuchItem))
         }
-        
-        NSFileProviderManager.default.signalEnumerator(for: .workingSet, completionHandler: { (error) in
-            print("send signal workingSet")
-        })
     }
     
     /*
