@@ -63,6 +63,8 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         super.init()
         
+        _ = providerData.setupActiveAccount()
+        
         verifyUploadQueueInLock()
         
         if #available(iOSApplicationExtension 11.0, *) {
@@ -1012,7 +1014,19 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
     
     func uploadFileSuccessFailure(_ fileName: String!, fileID: String!, identifier: String!, assetLocalIdentifier: String!, serverUrl: String!, selector: String!, selectorPost: String!, errorMessage: String!, errorCode: Int) {
         
-        NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier), clearDateReadDirectoryID: nil)
+        /* ONLY iOS 11*/
+        guard #available(iOS 11, *) else { return }
+        
+        if let metadata = NCManageDatabase.sharedInstance.getMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier)) {
+            let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
+            let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
+            
+            item.unenumChanges = [.containerDelete, .workingSetUpdate]
+            providerData.currentAnchor += 1
+            signalEnumerator(for: [item.parentItemIdentifier, .workingSet], item: item)
+        }
+        
+        //NCManageDatabase.sharedInstance.deleteMetadata(predicate: NSPredicate(format: "fileID = %@", assetLocalIdentifier), clearDateReadDirectoryID: nil)
 
         if errorCode == 0 {
                 
