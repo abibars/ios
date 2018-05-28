@@ -155,8 +155,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
         
         /* ONLY iOS 11*/
         guard #available(iOS 11, *) else { throw NSError(domain: NSCocoaErrorDomain, code: NSFileNoSuchFileError, userInfo:[:]) }
-
-        // Looking up the matched item; crash if nothing matched.
         
         if identifier == .rootContainer {
             
@@ -173,9 +171,6 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 metadata.typeFile = k_metadataTypeFile_directory
                     
                 return FileProviderItem(metadata: metadata, parentItemIdentifier: NSFileProviderItemIdentifier(NSFileProviderItemIdentifier.rootContainer.rawValue), providerData: providerData)
-                
-            } else {
-                assert(false, "directory not found, item with \(identifier) return nil!")
             }
             
         } else {
@@ -186,11 +181,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata!, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     return item
-                } else {
-                    assert(false, "parentItemIdentifier not found, item with \(identifier) return nil!")
                 }
-            } else {
-                assert(false, "metadata not found, item with \(identifier) return nil!")
             }
         }
         
