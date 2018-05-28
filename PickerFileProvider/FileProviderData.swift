@@ -21,13 +21,11 @@
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
 
-
 import FileProvider
-
 
 class FileProviderData: NSObject {
     
-    var fileProviderSignalItems = [FileProviderItem]() // Contains the items
+    var fileProviderSignalItems = [FileProviderItem]()
     
     var currentAnchor: UInt64 = 0
     
@@ -47,7 +45,6 @@ class FileProviderData: NSObject {
     var listFavoriteIdentifierRank = [String:NSNumber]()
     var fileNamePathImport = [String]()
 
-    
     func setupActiveAccount() -> Bool {
         
         groupURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: NCBrandOptions.sharedInstance.capabilitiesGroups)
