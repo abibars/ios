@@ -900,6 +900,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
+            fileProviderSignalUpdateItem.removeAll()
             fileProviderSignalUpdateItem.append(item)
             signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
             
@@ -1031,6 +1032,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
             let parentItemIdentifier = providerData.getParentItemIdentifier(metadata: metadata)
             let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
             
+            fileProviderSignalDeleteItemIdentifier.removeAll()
             fileProviderSignalDeleteItemIdentifier.append(item.itemIdentifier)
             signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
         }
@@ -1055,6 +1057,7 @@ class FileProviderExtension: NSFileProviderExtension, CCNetworkingDelegate {
                 if parentItemIdentifier != nil {
                     let item = FileProviderItem(metadata: metadata, parentItemIdentifier: parentItemIdentifier!, providerData: providerData)
                     
+                    fileProviderSignalUpdateItem.removeAll()
                     fileProviderSignalUpdateItem.append(item)
                     signalEnumerator(for: [item.parentItemIdentifier, .workingSet])
                 } 

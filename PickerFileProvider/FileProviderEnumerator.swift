@@ -150,12 +150,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         // Report the trashed items since last signal
         //
         observer.didDeleteItems(withIdentifiers: fileProviderSignalDeleteItemIdentifier)
-        fileProviderSignalDeleteItemIdentifier.removeAll()
         
         // Report the updated items since last signal
         //
         observer.didUpdate(fileProviderSignalUpdateItem)
-        //providerData.fileProviderSignalUpdateItems.removeAll()
         
         let data = "\(currentAnchor)".data(using: .utf8)
         observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)        
