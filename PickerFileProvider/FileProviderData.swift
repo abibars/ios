@@ -149,11 +149,4 @@ class FileProviderData: NSObject {
         
         return directory
     }
-    
-    // Convinient methods for item lookup
-    func item(for identifier: NSFileProviderItemIdentifier) -> FileProviderItem? {
-        
-        let items = fileProviderSignalItems.filter({ $0.itemIdentifier == identifier })
-        return items.first
-    }
 }
